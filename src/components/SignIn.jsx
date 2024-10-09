@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useUserStore from '../store/useUserStore.js';
+import { saveTokens } from '../auth.js';
 
 function SignIn() {
     const navigate = useNavigate();
@@ -26,6 +27,16 @@ function SignIn() {
       try {
         const response = await axios.post('/api/v1/user/login', formData);
         console.log(response);
+        console.log(response.data.refreshToken);
+
+        const refreshToken =  response.data.data.refreshToken;
+        const accessToken = response.data.data.accessToken;
+        
+        console.log(refreshToken);
+        console.log(accessToken);
+
+        saveTokens(refreshToken, accessToken);
+        
         
         const userIdFromResponse = response.data.data.user._id;
         console.log(userIdFromResponse);

@@ -6,7 +6,7 @@ import { UserPlus, Mail, Lock, Phone, User } from 'lucide-react';
 
 function SignUp() {
   const navigate = useNavigate();
-  // const { setUserId } = useUserStore();
+ 
 
   const [formData, setFormData] = useState({
     username: '',
@@ -27,13 +27,7 @@ function SignUp() {
     e.preventDefault();
     try {
       const response = await axios.post("api/v1/user/register", formData);
-      // const userIdFromResponse = response.data.data._id;
-      // console.log(userIdFromResponse);
       
-      
-      //   setUserId(userIdFromResponse);
-      
-      // Navigate to the sign-in page
       navigate('/sign-in');
     } catch (error) {
       console.error("Registration failed:", error);
