@@ -1,10 +1,10 @@
 import React from "react";
 import { FaUserAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { clearTokens,  isAuthenticated } from "../../auth.js";
+import { Link } from "react-router-dom";
 
 
 
@@ -44,7 +44,7 @@ const UserPanel = () => {
       <div className="sticky top-0 z-10">
         <div className="flex items-center justify-between bg-[#510674] px-8 py-2">
           <div className="logo">
-            <a href="#">
+            <Link to={"/"}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 300 60"
@@ -61,7 +61,7 @@ const UserPanel = () => {
                 <circle cx="270" cy="30" r="22" fill="#ffffff" opacity="0.9" />
                 <text x="262" y="40" fontFamily="Arial" fontSize="27" fill="#510674">$</text>
               </svg>
-            </a>
+              </Link>
           </div>
           <div className="icon me-8 text-[white]  transition duration-400 flex gap-4 items-center">
             <Link to="sign-up">

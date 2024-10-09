@@ -68,18 +68,19 @@ const deleteExpense = asyncHandler(async (req, res) => {
   const { expenseId } = req.params;
 
   const expense = await Expense.findByIdAndDelete(expenseId);
+  
   if (!expense) {
     throw new ApiError(404, "Expense not found");
   }
 
   // Remove expense from user's expenses array
-  await User.findByIdAndUpdate(expense.user_id, {
+  const deletedUser =  await User.findByIdAndUpdate(expense.user_id, {
     $pull: { expenses: expense._id },
   });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Expense deleted successfully!"));
+    .json(new ApiResponse(200, deletedUser, "Expense deleted successfully!"));
 });
 
 
