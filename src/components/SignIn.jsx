@@ -2,9 +2,12 @@ import { useState } from 'react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useUserStore from '../store/useUserStore.js';
 
 function SignIn() {
     const navigate = useNavigate();
+    const { setUserId } = useUserStore();
+
 
     const [formData, setFormData] = useState({
       email: '',
@@ -24,12 +27,10 @@ function SignIn() {
         const response = await axios.post('/api/v1/user/login', formData);
         console.log(response);
         
-        // Set the user ID in localStorage
-        if (response.data && response.data.userId) {
-          localStorage.setItem('userId', response.data.userId);
-        } else {
-          console.warn('User ID not found in the response');
-        }
+        const userIdFromResponse = response.data.data.user._id;
+        console.log(userIdFromResponse);
+        
+          setUserId(userIdFromResponse);
         
         navigate('/expense');
       } catch (error) {

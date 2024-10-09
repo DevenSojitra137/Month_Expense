@@ -1,7 +1,9 @@
 import React from "react";
 import { FaUserAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
+import { IoIosLogOut } from "react-icons/io";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FeatureCard = ({ icon: Icon, text }) => (
   <li className="flex items-center space-x-3 mb-4 p-3 rounded-lg hover:bg-purple-50 transition-all duration-300">
@@ -12,7 +14,24 @@ const FeatureCard = ({ icon: Icon, text }) => (
   </li>
 );
 
+
+
 const UserPanel = () => {
+
+  const navigate = useNavigate();
+
+  const handleLogout = async() => {
+    try {
+     const response = await axios.post('/api/v1/user/logout');
+     console.log(response);
+     localStorage.clear();
+
+     navigate('/');
+   } catch (error) {
+     console.error('Logout failed:', error);
+     alert('Logout failed. Please check your credentials and try again.');
+   }
+}
   return (
     <>
       <div className="sticky top-0 z-10">
@@ -37,12 +56,17 @@ const UserPanel = () => {
               </svg>
             </a>
           </div>
-          <div className="icon me-8 text-[white] hover:text-[black] transition duration-400">
+          <div className="icon me-8 text-[white]  transition duration-400 flex gap-4 items-center">
             <Link to="sign-up">
-              <i className="text-[28px]"> {/* Increased icon size to match */}
+              <i className="text-[28px] hover:text-[black]"> {/* Increased icon size to match */}
                 <FaUserAlt />
               </i>
             </Link>
+            <i className="text-[28px] hover:text-[black] cursor-pointer">
+
+            <IoIosLogOut size={40} onClick={handleLogout} />
+            </i>
+
           </div>
         </div>
       </div>
