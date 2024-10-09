@@ -7,10 +7,14 @@ import jwt from "jsonwebtoken";
 const generateAccessAndRefrshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
-
+    
+    console.log(user);
+    
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
+    console.log(accessToken);
+    
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
@@ -144,27 +148,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User loggedOut"));
-});
-
-const changeCurrentPassword = asyncHandler(async (req, res) => {
-  const { email, password, confPassword } = req.body;
-
-  const user = await User.findById(req.user?._id);
-
-  if (!email) {
-    throw new ApiError(400, "Invalid Email");
-  }
-
-  user.password = password;
-  await user.save({ validateBeforeSave: false });
-
-  if (!password === confPassword) {
-    throw new ApiError(400, "Invalid Confirm Password");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password change Successfully"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

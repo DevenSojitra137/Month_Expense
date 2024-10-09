@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import "./ExpenseFrom.css";
 import axios from "axios";
+import useUserStore from "../../store/useUserStore.js";
 
 export default function ExpenseForm(props) {
 
+  const { userId, setUserId } = useUserStore();
+  console.log(userId);
+  
 
   const [enteredTitle, setEnteredTitle] = useState("");
   const [enteredAmount, setEnteredAmount] = useState("");
@@ -26,15 +30,15 @@ export default function ExpenseForm(props) {
 
     
 
-      const response = await axios.post("/api/v2/expense/insertExpense",{
-        title:enteredTitle,
-        amount:enteredAmount,
-        date:enteredDate
-      } );
+    const response = await axios.post(`http://localhost:8000/api/v2/expense/insertExpense/${userId}`, {
+      title: enteredTitle,
+      amount: enteredAmount,
+      date: enteredDate,
+    });
 
 
+    console.log(response.data);
     
-
     console.log(data);
 
     setEnteredTitle("");

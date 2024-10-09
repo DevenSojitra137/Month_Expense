@@ -1,8 +1,8 @@
+import AiExpense from "./components/AiExpense.js/AiExpense";
 import ExpenseItem from "./components/Expenses/ExpenseItem";
 import Expenses from "./components/Expenses/Expenses";
 import NewExpense from "./components/NewExpense/NewExpense";
 import { useState } from "react";
-import UserPanle from "./components/UserPanle/UserPanle";
 import { useEffect } from "react";
 
 const Dummy_expenses = [
@@ -58,9 +58,11 @@ function App() {
   return (
     <>
       <div>
-        <UserPanle />
         <NewExpense onAddExpense={addExpenseHandler} />
-        <Expenses items={expenses} />
+        {/* <Expenses items={expenses} /> */}
+        <AiExpense />
+
+        
       </div>
     </>
   );

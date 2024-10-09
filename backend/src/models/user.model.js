@@ -37,10 +37,12 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
-    expense_id: {
+    expenses: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Expense",
-    }
+      },
+    ],
   },
   {
     timestamps: true,

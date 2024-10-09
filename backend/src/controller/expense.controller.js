@@ -2,86 +2,111 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Expense } from "../models/expense.model.js";
+import {User} from "../models/user.model.js";
+import mongoose from "mongoose";
 
 const insertExpense = asyncHandler(async (req, res) => {
-  const { title, amount ,date } = req.body;
+  const { title, amount, date } = req.body;
+  const { userId } = req.params; // Changed parameter name to match route
+
   console.log("Request Body:", req.body);
 
-  if (
-    [title, amount, date].some(
-      (field) => field === ""
-    )
-  ) {
+  if ([title, amount, date].some((field) => !field)) {
     throw new ApiError(400, "All fields are required");
+  }
+
+  // Validate user existence
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
 
   const expense = await Expense.create({
     title,
     amount,
-    date
+    date,
+    user_id: userId,
   });
 
-  
+  // Add expense to user's expenses array
+  user.expenses.push(expense._id);
+  await user.save();
+
   return res
     .status(201)
-    .json(new ApiResponse(200, expense, "data insert successfully!!"));
+    .json(new ApiResponse(201, expense, "Expense inserted successfully!"));
 });
 
 const updateExpense = asyncHandler(async (req, res) => {
   const { title, amount, date } = req.body;
-  const { expenseId } = req.params; 
+  const { expenseId } = req.params;
 
   console.log("Request Body:", req.body);
 
-  if ([title, amount, date].some((field) => !field || field === "")) {
-    return res.status(400).json(new ApiResponse(400, {}, "All fields are required"));
+  if ([title, amount, date].some((field) => !field)) {
+    throw new ApiError(400, "All fields are required");
   }
 
-  try {
-  
-    const expense = await Expense.findById(expenseId);
-
-    if (!expense) {
-      throw new ApiError(400, "expense not found");
-    }
-
-    
-    expense.title = title;
-    expense.amount = amount;
-    expense.date = date;
-
-    await expense.save();
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, expense, "Expense updated successfully!"));
-
-  } catch (error) {
-    console.error("Error updating expense:", error);
-    return res.status(500).json(new ApiResponse(500, {}, "Error updating data"));
+  const expense = await Expense.findById(expenseId);
+  if (!expense) {
+    throw new ApiError(404, "Expense not found");
   }
+
+  expense.title = title;
+  expense.amount = amount;
+  expense.date = date;
+
+  await expense.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, expense, "Expense updated successfully!"));
 });
 
 
 const deleteExpense = asyncHandler(async (req, res) => {
   const { expenseId } = req.params;
 
+  const expense = await Expense.findByIdAndDelete(expenseId);
+  if (!expense) {
+    throw new ApiError(404, "Expense not found");
+  }
+
+  // Remove expense from user's expenses array
+  await User.findByIdAndUpdate(expense.user_id, {
+    $pull: { expenses: expense._id },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Expense deleted successfully!"));
+});
+
+
+// Get User with Expenses
+const getUserWithExpenses = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+
+  // Validate user ID format
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, "Invalid user ID");
+  }
+
+  const user = await User.findById(userId).populate("expenses");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(new ApiResponse(200, user, "User with expenses retrieved successfully"));
+});
+
+// Get All Expenses
+const getAllExpenses = asyncHandler(async (req, res) => {
   try {
-    // Find and delete the expense by ID
-    const expense = await Expense.findByIdAndDelete(expenseId);
-
-    // Check if the expense was found and deleted
-    if (!expense) {
-      throw new ApiError(404, "Expense not found");
-    }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "Expense deleted successfully!"));
-
+    const expenses = await Expense.find().populate("user_id", "username email");
+    res.status(200).json(new ApiResponse(200, expenses, "All expenses retrieved successfully"));
   } catch (error) {
-    console.error("Error deleting expense:", error); // Update error message
-    return res.status(500).json(new ApiResponse(500, {}, "Error deleting data"));
+    res.status(500).json(new ApiResponse(500, {}, "Error retrieving expenses"));
   }
 });
 
@@ -93,5 +118,7 @@ const deleteExpense = asyncHandler(async (req, res) => {
 export {
   insertExpense,
   updateExpense,
-  deleteExpense
+  deleteExpense,
+  getUserWithExpenses,
+  getAllExpenses
 }
