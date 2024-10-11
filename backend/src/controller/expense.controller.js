@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 const insertExpense = asyncHandler(async (req, res) => {
   const { title, amount, date } = req.body;
-  const { userId } = req.params; // Changed parameter name to match route
+  const { userId } = req.params; 
 
   console.log("Request Body:", req.body);
 
@@ -15,7 +15,7 @@ const insertExpense = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  // Validate user existence
+  
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -28,7 +28,7 @@ const insertExpense = asyncHandler(async (req, res) => {
     user_id: userId,
   });
 
-  // Add expense to user's expenses array
+  
   user.expenses.push(expense._id);
   await user.save();
 
@@ -75,7 +75,7 @@ const deleteExpense = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Expense not found");
   }
 
-  // Remove expense from user's expenses array
+  
   const deletedUser =  await User.findByIdAndUpdate(expense.user_id, {
     $pull: { expenses: expense._id },
   });
@@ -88,11 +88,11 @@ const deleteExpense = asyncHandler(async (req, res) => {
 });
 
 
-// Get User with Expenses
+
 const getUserWithExpenses = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
 
-  // Validate user ID format
+  
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new ApiError(400, "Invalid user ID");
   }
@@ -105,7 +105,7 @@ const getUserWithExpenses = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, user, "User with expenses retrieved successfully"));
 });
 
-// Get All Expenses
+
 const getAllExpenses = asyncHandler(async (req, res) => {
   try {
     const expenses = await Expense.find().populate("user_id", "username email");
