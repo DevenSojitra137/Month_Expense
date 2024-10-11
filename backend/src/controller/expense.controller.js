@@ -69,6 +69,8 @@ const deleteExpense = asyncHandler(async (req, res) => {
 
   const expense = await Expense.findByIdAndDelete(expenseId);
   
+  console.log(expense);
+  
   if (!expense) {
     throw new ApiError(404, "Expense not found");
   }
@@ -78,6 +80,8 @@ const deleteExpense = asyncHandler(async (req, res) => {
     $pull: { expenses: expense._id },
   });
 
+  console.log(expenseId);
+  
   return res
     .status(200)
     .json(new ApiResponse(200, deletedUser, "Expense deleted successfully!"));

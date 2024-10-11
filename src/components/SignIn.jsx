@@ -59,7 +59,7 @@ function SignIn() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
+           
             <div className="relative">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email
@@ -76,7 +76,7 @@ function SignIn() {
               />
             </div>
 
-            {/* Password */}
+           
             <div className="relative">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
@@ -93,7 +93,7 @@ function SignIn() {
               />
             </div>
 
-            {/* Forgot Password Link */}
+           
             <div className="text-right">
               <Link 
                 to="/forgot-password" 
@@ -103,7 +103,7 @@ function SignIn() {
               </Link>
             </div>
 
-            {/* Submit Button */}
+           
             <button
               type="submit"
               className="w-full bg-purple-700 text-white py-3 px-4 rounded-lg hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200 font-medium"
@@ -111,7 +111,7 @@ function SignIn() {
               Sign In
             </button>
 
-            {/* Sign Up Link */}
+          
             <p className="text-center text-gray-600 mt-4">
               Don't have an account?{' '}
               <Link to="/sign-up" className="text-purple-700 hover:text-purple-800 font-medium">

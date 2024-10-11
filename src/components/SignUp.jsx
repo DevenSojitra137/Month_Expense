@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import useUserStore from '../store/useUserStore';
 import { UserPlus, Mail, Lock, Phone, User } from 'lucide-react';
 
 function SignUp() {
@@ -31,7 +30,7 @@ function SignUp() {
       navigate('/sign-in');
     } catch (error) {
       console.error("Registration failed:", error);
-      // You might want to show an error message to the user here
+      
     }
   };
 
@@ -44,7 +43,6 @@ function SignUp() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Username */}
           <div className="relative">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username
@@ -66,7 +64,7 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Full Name */}
+          
           <div className="relative">
             <label htmlFor="fullname" className="block text-sm font-medium text-gray-700 mb-1">
               Full Name
@@ -88,7 +86,7 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Email */}
+          
           <div className="relative">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -110,7 +108,7 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Password */}
+         
           <div className="relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -132,7 +130,7 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Mobile */}
+         
           <div className="relative">
             <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
               Mobile
@@ -154,7 +152,7 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Submit Button */}
+          
           <button
             type="submit"
             className="w-full bg-purple-700 text-white py-3 px-4 rounded-lg hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200 font-medium"

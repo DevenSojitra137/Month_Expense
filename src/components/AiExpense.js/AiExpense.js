@@ -72,7 +72,7 @@ const AiExpense = () => {
     setUpdatedExpense({
       title: expense.title,
       amount: expense.amount,
-      date: expense.date.split('T')[0], // Format date for input field
+      date: expense.date.split('T')[0], 
     });
     setUpdateModalOpen(true);
   };
@@ -99,8 +99,8 @@ const AiExpense = () => {
   const handleDeleteClick = async (expenseId) => {
     console.log(expenseId)
     try {
-      const response = await axios.delete(`http://localhost:8000/api/v2/expense/deleteExpense/${expenseId}`);
-      console.log('Deleted Expense ID:', expenseId);  // Log for debugging
+      const response = await axios.delete(`/api/v2/expense/deleteExpense/${expenseId}`, );
+      console.log('Deleted Expense ID:', expenseId);  
       setExpenses(expenses.filter(exp => exp._id !== expenseId));
       console.log('Delete Response:', response);
     } catch (err) {
