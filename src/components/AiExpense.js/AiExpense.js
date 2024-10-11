@@ -6,7 +6,9 @@ import useUserStore from '../../store/useUserStore';
 const AiExpense = () => {
   const [expenses, setExpenses] = useState([]);
   const [selectedYear, setSelectedYear] = useState('2024');
+  const [selectedMonth, setSelectedMonth] = useState('all');
   const [chartData, setChartData] = useState([]);
+  const [totalExpense, setTotalExpense] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -25,7 +27,7 @@ const AiExpense = () => {
 
   useEffect(() => {
     updateChartData();
-  }, [expenses, selectedYear]);
+  }, [expenses, selectedYear, selectedMonth]);
 
   const fetchExpenses = async () => {
     try {
@@ -49,22 +51,31 @@ const AiExpense = () => {
   };
 
   const updateChartData = () => {
-    const filteredExpenses = expenses.filter(expense =>
+    let filteredExpenses = expenses.filter(expense =>
       new Date(expense.date).getFullYear().toString() === selectedYear
     );
+
+    if (selectedMonth !== 'all') {
+      filteredExpenses = filteredExpenses.filter(expense =>
+        new Date(expense.date).getMonth().toString() === selectedMonth
+      );
+    }
 
     const monthlyData = Array(12).fill(0).map((_, index) => ({
       month: new Date(0, index).toLocaleString('default', { month: 'short' }),
       amount: 0
     }));
 
+    let total = 0;
     filteredExpenses.forEach(expense => {
       const expenseDate = new Date(expense.date);
       const month = expenseDate.getMonth();
       monthlyData[month].amount += expense.amount;
+      total += expense.amount;
     });
 
     setChartData(monthlyData);
+    setTotalExpense(total);
   };
 
   const handleUpdateClick = (expense) => {
@@ -97,9 +108,8 @@ const AiExpense = () => {
   };
 
   const handleDeleteClick = async (expenseId) => {
-    console.log(expenseId)
     try {
-      const response = await axios.delete(`/api/v2/expense/deleteExpense/${expenseId}`, );
+      const response = await axios.delete(`/api/v2/expense/deleteExpense/${expenseId}`);
       console.log('Deleted Expense ID:', expenseId);  
       setExpenses(expenses.filter(exp => exp._id !== expenseId));
       console.log('Delete Response:', response);
@@ -108,9 +118,23 @@ const AiExpense = () => {
       setError(`Failed to delete expense. ${err.response?.status === 404 ? 'Expense not found.' : 'Please try again.'}`);
     }
   };
-  
 
   const years = ['2024', '2023', '2022', '2021'];
+  const months = [
+    { value: 'all', label: 'All Months' },
+    { value: '0', label: 'January' },
+    { value: '1', label: 'February' },
+    { value: '2', label: 'March' },
+    { value: '3', label: 'April' },
+    { value: '4', label: 'May' },
+    { value: '5', label: 'June' },
+    { value: '6', label: 'July' },
+    { value: '7', label: 'August' },
+    { value: '8', label: 'September' },
+    { value: '9', label: 'October' },
+    { value: '10', label: 'November' },
+    { value: '11', label: 'December' },
+  ];
 
   if (loading) return <div className="text-white">Loading expenses...</div>;
   if (error) return (
@@ -122,17 +146,35 @@ const AiExpense = () => {
 
   return (
     <div className="p-4 bg-gray-900 text-white">
-      <div className="mb-4">
-        <label className="mr-2">Filter by year</label>
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="bg-white text-black p-2 rounded"
-        >
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <label className="mr-2">Filter by year</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="bg-white text-black p-2 rounded"
+          >
+            {years.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold">Total Expense</h2>
+          <p className="text-2xl font-bold text-purple-400">₹{totalExpense.toFixed(2)}</p>
+        </div>
+        <div>
+          <label className="mr-2">Filter by month</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="bg-white text-black p-2 rounded"
+          >
+            {months.map(month => (
+              <option key={month.value} value={month.value}>{month.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="mb-4 bg-purple-100 p-4 rounded-lg">
@@ -148,7 +190,11 @@ const AiExpense = () => {
 
       <div>
         {expenses
-          .filter(expense => new Date(expense.date).getFullYear().toString() === selectedYear)
+          .filter(expense => {
+            const expenseDate = new Date(expense.date);
+            return expenseDate.getFullYear().toString() === selectedYear &&
+              (selectedMonth === 'all' || expenseDate.getMonth().toString() === selectedMonth);
+          })
           .map(expense => (
             <div key={expense._id} className="mb-2 bg-gray-800 p-4 rounded">
               <div className="flex justify-between items-center">
@@ -164,7 +210,7 @@ const AiExpense = () => {
                 </div>
                 <div className="flex items-center">
                   <div className="bg-purple-700 px-4 py-2 rounded-full text-white font-bold mr-4">
-                    ${expense.amount.toFixed(2)}
+                    ₹{expense.amount.toFixed(2)}
                   </div>
                   <button onClick={() => handleUpdateClick(expense)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Update</button>
                   <button onClick={() => handleDeleteClick(expense._id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
@@ -190,7 +236,7 @@ const AiExpense = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
+                <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount (in ₹)</label>
                 <input
                   type="number"
                   id="amount"

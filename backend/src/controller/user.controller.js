@@ -199,11 +199,61 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
+const getAllUser = asyncHandler(
+  async (req, res) => {
+    const users = await User.find();
+    return res.status(200).json(
+      new ApiResponse(200, users, "All users")
+    );
+  }
+)
+
+const updateUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  // console.log(userId);
+  try {
+
+    const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+      new: true,
+      runValidators: true, 
+    });
+
+    if (!updatedUser) {
+      throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, updatedUser, "User Update Successfully!!!")
+  );
+  } catch (error) {
+    throw new ApiError(401, "user not updated");
+  }
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  // console.log(userId);
+  try {
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, {}, "User deleted Successfully!!!")
+  );
+  } catch (error) {
+    throw new ApiError(401, "user not deleted");
+  }
+});
 
 export {
   registerUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
-
+  getAllUser,
+  updateUser,
+  deleteUser
 };

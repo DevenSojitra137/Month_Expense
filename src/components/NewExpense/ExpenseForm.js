@@ -36,15 +36,16 @@ export default function ExpenseForm(props) {
       date: enteredDate,
     });
 
-
+    
     console.log(response.data);
     
     console.log(data);
-
+    
     setEnteredTitle("");
     setEnteredAmount("");
     setEnteredDate("");
-
+    
+    window.location.reload(); 
     
   };
 

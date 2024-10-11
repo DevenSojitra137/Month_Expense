@@ -7,6 +7,7 @@ import Home from './components/Home';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Des from './components/UserPanle/Des';
+import Admin from './components/Admin/Admin';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path:"/sign-in",
     element: <SignIn/>,
+  },
+  {
+    path:"/admin",
+    element: <Admin />
   },
  
 

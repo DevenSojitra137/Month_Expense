@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@radix-ui/react-select": "^2.1.2",
+    "@radix-ui/react-slot": "^1.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -16,6 +17,7 @@
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "recharts": "^2.12.7",
+    "shadcn-ui": "^0.9.2",
     "web-vitals": "^2.1.4",
     "zustand": "^5.0.0-rc.2"
   },
@@ -45,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@shadcn/ui": "^0.0.4",
     "tailwindcss": "^3.4.13"
   }
 }
