@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Expense } from "../models/expense.model.js";
 import {User} from "../models/user.model.js";
 import mongoose from "mongoose";
+import PDFDocument from 'pdfkit';
 
 const insertExpense = asyncHandler(async (req, res) => {
   const { title, amount, date } = req.body;
@@ -116,7 +117,45 @@ const getAllExpenses = asyncHandler(async (req, res) => {
 });
 
 
+const generatePDF = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
 
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const expenses = await Expense.find({ user_id: userId });
+
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=expense_report.pdf');
+
+    doc.pipe(res);
+
+    doc.fontSize(25).text('Expense Report', 100, 100);
+    doc.fontSize(15).text(`User: ${user.username}`, 100, 130);
+
+    let yPosition = 160;
+    doc.fontSize(12).text('Title', 100, yPosition);
+    doc.text('Amount(in Rupees)', 300, yPosition);
+    doc.text('Date', 400, yPosition);
+
+    yPosition += 20;
+    expenses.forEach((expense) => {
+      doc.text(expense.title, 100, yPosition);
+      doc.text(`${expense.amount.toFixed(2)}`, 300, yPosition);
+      doc.text(expense.date, 400, yPosition);
+      yPosition += 20;
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    res.status(500).json(new ApiError(500, "Failed to generate PDF"));
+  }
+});
 
 
 
@@ -125,5 +164,6 @@ export {
   updateExpense,
   deleteExpense,
   getUserWithExpenses,
-  getAllExpenses
+  getAllExpenses,
+  generatePDF
 }

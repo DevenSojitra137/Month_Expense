@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, Search } from 'lucide-react';
 
-// UpdateUserModal component remains unchanged
 const UpdateUserModal = ({ user, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     username: user.username || '',
@@ -123,7 +122,6 @@ const UpdateUserModal = ({ user, onClose, onUpdate }) => {
   );
 };
 
-// DashboardCard component remains unchanged
 const DashboardCard = ({ title, value }) => (
   <div className="bg-white p-6 rounded-lg shadow-md">
     <h2 className="text-xl font-semibold mb-2">{title}</h2>
@@ -134,11 +132,12 @@ const DashboardCard = ({ title, value }) => (
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Existing fetch and delete functions remain unchanged
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -149,11 +148,13 @@ const AdminDashboard = () => {
         response.data.data ? response.data.data : [];
 
       setUsers(userData);
+      setFilteredUsers(userData);
       setError(null);
     } catch (err) {
       console.error('Error fetching users:', err);
       setError('Failed to fetch users. Please try again later.');
       setUsers([]);
+      setFilteredUsers([]);
     } finally {
       setLoading(false);
     }
@@ -178,6 +179,30 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const filtered = users.filter(user =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchTerm, users]);
+
+  const highlightText = (text, highlight) => {
+    if (!highlight.trim()) {
+      return <span>{text}</span>;
+    }
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = text.split(regex);
+    return (
+      <span>
+        {parts.filter(String).map((part, i) => (
+          regex.test(part) ? <mark key={i} className="bg-yellow-200">{part}</mark> : <span key={i}>{part}</span>
+        ))}
+      </span>
+    );
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -207,7 +232,17 @@ const AdminDashboard = () => {
                 {error}
               </div>
             )}
-            {users.length === 0 ? (
+            <div className="mb-4 relative">
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md pr-10"
+              />
+              <Search className="absolute right-3 top-2.5 text-gray-400" size={20} />
+            </div>
+            {filteredUsers.length === 0 ? (
               <div className="text-center py-4">No users found</div>
             ) : (
               <table className="min-w-full bg-white">
@@ -220,11 +255,11 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <tr key={user._id || user.id}>
-                      <td className="py-2 px-4 border-b">{user.username}</td>
-                      <td className="py-2 px-4 border-b">{user.FullName}</td>
-                      <td className="py-2 px-4 border-b">{user.email}</td>
+                      <td className="py-2 px-4 border-b">{highlightText(user.username, searchTerm)}</td>
+                      <td className="py-2 px-4 border-b">{highlightText(user.FullName, searchTerm)}</td>
+                      <td className="py-2 px-4 border-b">{highlightText(user.email, searchTerm)}</td>
                       <td className="py-2 px-4 border-b">
                         <button
                           className="bg-blue-500 text-white py-1 px-2 rounded mr-2 hover:bg-blue-600"
@@ -253,9 +288,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Main container */}
       <div className="flex flex-1">
-        {/* Sidebar */}
         <div className="w-64 min-h-screen bg-white shadow-lg flex flex-col">
           <div className="bg-purple-700 text-white py-4 px-6">
             <h1 className="text-xl font-bold">Admin Dashboard</h1>
@@ -283,14 +316,12 @@ const AdminDashboard = () => {
             </button>
           </nav>
         </div>
-        {/* Main content area */}
         <div className="flex-1 bg-gray-50">
           <div className="p-8">
             {renderContent()}
           </div>
         </div>
       </div>
-      {/* Update User Modal */}
       {selectedUser && (
         <UpdateUserModal
           user={selectedUser}

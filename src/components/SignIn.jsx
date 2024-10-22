@@ -91,19 +91,7 @@ function SignIn() {
                 required
                 className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
               />
-            </div>
-
-           
-            <div className="text-right">
-              <Link 
-                to="/forgot-password" 
-                className="text-sm text-purple-700 hover:text-purple-800 font-medium"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-
-           
+            </div>           
             <button
               type="submit"
               className="w-full bg-purple-700 text-white py-3 px-4 rounded-lg hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200 font-medium"
